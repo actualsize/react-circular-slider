@@ -37,18 +37,19 @@ const App = () => {
     			max={100}
 				appendToValue="%"
 				width={370}
-				hideLabelValue={true}
+				hideLabelValue={false}
 				progressLineCap={`flat`}
 				trackSize={10}
 				progressSize={10}
 				knobSize={47}
+				isPeriodic={false}
 				/>
 			</div>
 			<pre className={styles.pre}>
-				{`<CircularSlider
-    min={0}
-    max={100}
-    appendToValue="%"
+{`<CircularSlider
+	min={0}
+	max={100}
+	appendToValue="%"
 	width={500}
 	hideLabelValue={true}
 	progressLineCap={'flat'}
@@ -57,6 +58,7 @@ const App = () => {
 	trackSize={10}
 	progressSize={10}
 	knobSize={47}
+	isPeriodic={false}
 />`}
 			</pre>
 			<h3 style={styles.h3}>

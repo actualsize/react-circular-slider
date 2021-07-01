@@ -74,6 +74,7 @@ const CircularSlider = ({
         dataIndex = 0,
         progressLineCap = 'round',
         renderLabelValue = null,
+        isPeriodic = true,
         children,
         onChange = value => {},
     }) => {
@@ -114,15 +115,13 @@ const CircularSlider = ({
         // change direction
         const dashOffset = (degrees / spreadDegrees) * state.dashFullArray;
         degrees = (getSliderRotation(direction) === -1 ? spreadDegrees - degrees : degrees);
-
         const pointsInCircle = (state.data.length - 1) / spreadDegrees;
         const currentPoint = Math.round(degrees * pointsInCircle);
-
         if(state.data[currentPoint] !== state.label) {
             // props callback for parent
             onChange(state.data[currentPoint]);
         }
-
+        
         dispatch({
             type: 'setKnobPosition',
             payload: {
@@ -134,7 +133,8 @@ const CircularSlider = ({
                 }
             }
         });
-    }, [state.dashFullArray, state.radius, state.data, state.label, knobPosition, trackSize, direction, onChange]);
+        
+    }, [state.radius, state.dashFullArray, state.data, state.label, trackSize, knobPosition, direction, onChange]);
 
     const onMouseDown = () => {
         dispatch({
@@ -177,8 +177,31 @@ const CircularSlider = ({
             (offsetRelativeToDocument(circularSlider).top + state.radius);
 
         const radians = Math.atan2(mouseYFromCenter, mouseXFromCenter);
-        setKnobPosition(radians);
-    }, [state.isDragging, state.radius, setKnobPosition, isServer]);
+        
+        const offsetRadians = radians + knobOffset[knobPosition];
+        let degrees = (offsetRadians > 0 ? offsetRadians
+            :
+            ((2 * Math.PI) + offsetRadians)) * (spreadDegrees / (2 * Math.PI));
+        degrees = (getSliderRotation(direction) === -1 ? spreadDegrees - degrees : degrees);
+        const pointsInCircle = (state.data.length - 1) / spreadDegrees;
+        const currentPoint = Math.round(degrees * pointsInCircle);
+        const newLabel = state.data[currentPoint]
+        const quarterIndex = Math.round(state.data.length / 4)
+        
+        if (isPeriodic || (!(state.data.slice(0, quarterIndex).includes(state.label) && state.data.slice(3 * quarterIndex, state.data.length).includes(newLabel)) 
+            && !(state.data.slice(0, quarterIndex).includes(newLabel) && state.data.slice(3 * quarterIndex, state.data.length).includes(state.label))))
+        {
+            setKnobPosition(radians);
+        } 
+        else if (state.data.slice(0, quarterIndex).includes(state.label) && state.data.slice(3 * quarterIndex, state.data.length).includes(newLabel))
+        {
+            setKnobPosition(-(knobOffset[state.knobPosition]*getSliderRotation(direction))+(state.offset*getSliderRotation(direction)));
+        } 
+        else if (state.data.slice(0, quarterIndex).includes(newLabel) && state.data.slice(3 * quarterIndex, state.data.length).includes(state.label)) 
+        {
+            setKnobPosition(-(knobOffset[state.knobPosition]*getSliderRotation(direction))-(state.offset*getSliderRotation(direction)));
+        }
+    }, [state.isDragging, state.radius, state.data, state.label, state.knobPosition, state.offset, knobPosition, direction, isPeriodic, isServer, setKnobPosition]);
 
     // Get svg path length onmount
     useEffect(() => {
