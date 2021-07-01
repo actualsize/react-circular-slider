@@ -28,6 +28,28 @@ const App = () => {
 	return (
 		<div style={styles.wrapper}>
 			<h3 style={styles.h3}>
+				Experimental slider for Actual Size:
+			</h3>
+			<div style={styles.slider}>
+				<CircularSlider
+				label="label"
+				min={0}
+    			max={100}
+				appendToValue="%"
+				width={500}
+				hideLabelValue={true}
+				/>
+			</div>
+			<pre className={styles.pre}>
+				{`<CircularSlider
+    min={0}
+    max={100}
+    appendToValue="%"
+	width={500}
+	hideLabelValue={true}
+/>`}
+			</pre>
+			<h3 style={styles.h3}>
 				Anticlockwise rotation with the knob positioned to the right and "°"
 				appended to the value:
 			</h3>
