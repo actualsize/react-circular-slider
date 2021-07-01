@@ -36,8 +36,12 @@ const App = () => {
 				min={0}
     			max={100}
 				appendToValue="%"
-				width={500}
+				width={370}
 				hideLabelValue={true}
+				progressLineCap={`flat`}
+				trackSize={10}
+				progressSize={10}
+				knobSize={47}
 				/>
 			</div>
 			<pre className={styles.pre}>
@@ -47,6 +51,12 @@ const App = () => {
     appendToValue="%"
 	width={500}
 	hideLabelValue={true}
+	progressLineCap={'flat'}
+	trackSize={10}
+	progressSize={10}
+	trackSize={10}
+	progressSize={10}
+	knobSize={47}
 />`}
 			</pre>
 			<h3 style={styles.h3}>
