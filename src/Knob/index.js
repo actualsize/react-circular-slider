@@ -1,6 +1,5 @@
 import React  from 'react';
 import PropTypes from 'prop-types';
-import './index.css';
 
 const Knob = ({
 	isDragging,
@@ -23,18 +22,6 @@ const Knob = ({
 
 		dragging: {
 			cursor: 'grabbing',
-		},
-
-		pause: {
-			animationPlayState: 'paused'
-		},
-
-		animation: {
-			transformOrigin: '50% 50%',
-			animationTimingFunction: 'ease-out',
-			animationDuration: '1500ms',
-			animationIterationCount: 'infinite',
-			animationName: 'pulse',
 		},
 
 		hide: {
@@ -68,15 +55,6 @@ const Knob = ({
 				width={`${knobSize}px`}
 				height={`${knobSize}px`}
 				viewBox={`0 0 ${knobSize} ${knobSize}`}>
-				<circle
-					style={{ ...styles.animation, ...(isDragging && styles.pause) }}
-					fill={knobColor}
-					fillOpacity='0.2'
-					stroke='none'
-					cx={knobSize / 2}
-					cy={knobSize / 2}
-					r={knobSize / 2}
-				/>
 				<circle
 					fill={knobColor}
 					stroke='none'
