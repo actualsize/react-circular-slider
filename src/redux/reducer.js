@@ -31,6 +31,16 @@ const reducer = (state, action) => {
                 ...state,
                 ...action.payload,
             };
+        case 'onFocusIn':
+            return {
+                ...state,
+                ...action.payload,
+            };
+        case 'onFocusOut':
+            return {
+                ...state,
+                ...action.payload,
+            };
         default:
             throw new Error();
     }

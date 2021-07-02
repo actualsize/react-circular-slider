@@ -44,7 +44,8 @@ const styles = ({
         position: 'relative',
         display: 'inline-block',
         opacity: 0,
-        transition: 'opacity 1s ease-in'
+        outline: 'none',
+        // transition: 'opacity 1s ease-in'
     },
 
     mounted: {
@@ -61,6 +62,7 @@ const CircularSlider = ({
         knobColor = '#4e63ea',
         knobSize = 36,
         knobPosition = 'top',
+        highlightColor = 'yellow',
         labelColor = '#272b77',
         labelBottom = false,
         labelFontSize = '1rem',
@@ -81,7 +83,6 @@ const CircularSlider = ({
         progressLineCap = 'round',
         renderLabelValue = null,
         isPeriodic = true,
-        preventDefault = false,
         children,
         onChange = value => {},
     }) => {
@@ -89,6 +90,7 @@ const CircularSlider = ({
         mounted: false,
         isDragging: false,
         keyPressed: false,
+        isFocused: false,
         width: width,
         radius: width / 2,
         knobPosition: knobPosition,
@@ -113,7 +115,9 @@ const CircularSlider = ({
         UP: touchSupported ? 'touchend' : 'mouseup',
         MOVE: touchSupported ? 'touchmove' : 'mousemove',
         KEY_DOWN: 'keydown',
-        KEY_UP: 'keyup'
+        KEY_UP: 'keyup',
+        FOCUS_IN: 'focusin',
+        FOCUS_OUT: 'focusout'
     };
 
     const setKnobPosition = useCallback((radians) => {
@@ -224,9 +228,7 @@ const CircularSlider = ({
 
     const onKeyDown = useCallback((event) => {
         if (!(document.activeElement === circularSlider.current)) return;
-        if (preventDefault) {
-            event.preventDefault();
-        }
+        
         
         dispatch({
             type: 'onKeyDown',
@@ -236,6 +238,7 @@ const CircularSlider = ({
         });
         const labelIndex = labelDataIndex(state.label, state.data);
         if (incrementKeyCodes.includes(event.keyCode)){
+            event.preventDefault();
             if(labelIndex !== state.data.length - 1){
                 const targetDegrees = (labelIndex + 1) * (360 / state.data.length);
                 const targetRadians = getRadians(targetDegrees) - knobOffset[state.knobPosition] + state.offset;
@@ -244,13 +247,36 @@ const CircularSlider = ({
         }
         
         if (decrementKeyCodes.includes(event.keyCode)){
+            event.preventDefault();
             if(labelIndex !== 0){
                 const targetDegrees = (labelIndex - 1) * (360 / state.data.length);
                 const targetRadians = getRadians(targetDegrees) - knobOffset[state.knobPosition] + state.offset;
                 setKnobPosition(targetRadians);
             }
         }
-    }, [preventDefault, setKnobPosition, state.data, state.knobPosition, state.label, state.offset]);
+    }, [setKnobPosition, state.data, state.knobPosition, state.label, state.offset]);
+
+    const onFocusIn = useCallback(()=>{
+        if (document.activeElement === circularSlider.current){
+            dispatch({
+                type: 'onFocusIn',
+                payload: {
+                    isFocused: true
+                }
+            });
+        }
+    },[])
+
+    const onFocusOut = useCallback(()=>{
+        if (document.activeElement !== circularSlider.current){
+            dispatch({
+                type: 'onFocusOut',
+                payload: {
+                    isFocused: false
+                }
+            });
+        }
+    },[])
 
     // Get svg path length onmount
     useEffect(() => {
@@ -298,7 +324,8 @@ const CircularSlider = ({
     useEventListener(SLIDER_EVENT.UP, onMouseUp);
     useEventListener(SLIDER_EVENT.KEY_DOWN, onKeyDown);
     useEventListener(SLIDER_EVENT.KEY_UP, onKeyUp);
-    useEventListener('focus', ()        => {console.log(label.toString() + ' is focused')})
+    useEventListener(SLIDER_EVENT.FOCUS_IN, onFocusIn);
+    useEventListener(SLIDER_EVENT.FOCUS_OUT, onFocusOut);
 
     const sanitizedLabel = label.replace(/[\W_]/g, "_");
 
@@ -327,7 +354,9 @@ const CircularSlider = ({
                     knobColor={knobColor}
                     trackSize={trackSize}
                     hideKnob={hideKnob}
+                    highlightColor={highlightColor}
                     onMouseDown={onMouseDown}
+                    isFocused={state.isFocused}
                 >
                     {children}
                 </Knob>
@@ -358,6 +387,7 @@ CircularSlider.propTypes = {
     max: PropTypes.number,
     knobColor: PropTypes.string,
     knobPosition: PropTypes.string,
+    highlightColor: PropTypes.string,
     hideKnob: PropTypes.bool,
     knobDraggable: PropTypes.bool,
     labelColor: PropTypes.string,

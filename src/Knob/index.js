@@ -10,6 +10,8 @@ const Knob = ({
 	onMouseDown,
 	trackSize,
 	children,
+	highlightColor,
+	isFocused
 }) => {
 	const styles = {
 		knob: {
@@ -57,7 +59,8 @@ const Knob = ({
 				viewBox={`0 0 ${knobSize} ${knobSize}`}>
 				<circle
 					fill={knobColor}
-					stroke='none'
+					stroke={isFocused ? highlightColor : 'none'}
+					strokeWidth='3'
 					cx={knobSize / 2}
 					cy={knobSize / 2}
 					r={(knobSize * 2 / 3) / 2}
@@ -77,6 +80,8 @@ Knob.propTypes = {
 	trackSize: PropTypes.number,
 	children: PropTypes.element,
 	onMouseDown: PropTypes.func,
+	highlightColor: PropTypes.string,
+	isFocused: PropTypes.bool
 };
 
 export default Knob;
