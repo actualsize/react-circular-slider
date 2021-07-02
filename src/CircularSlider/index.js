@@ -227,7 +227,7 @@ const CircularSlider = ({
     };
 
     const onKeyDown = useCallback((event) => {
-        // if (!(document.activeElement === circularSlider.current)) return;
+        if (!(document.activeElement === circularSlider.current)) return;
         
         
         dispatch({
