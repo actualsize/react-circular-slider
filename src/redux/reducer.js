@@ -21,6 +21,16 @@ const reducer = (state, action) => {
                 ...state,
                 ...action.payload,
             };
+        case 'onKeyDown':
+            return {
+                ...state,
+                ...action.payload,
+            };
+        case 'onKeyUp':
+            return {
+                ...state,
+                ...action.payload,
+            };
         default:
             throw new Error();
     }

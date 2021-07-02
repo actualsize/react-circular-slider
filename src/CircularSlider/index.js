@@ -15,6 +15,8 @@ const knobOffset = {
     bottom: -Math.PI / 2,
     left: -Math.PI
 };
+const incrementKeyCodes = [87, 68, 38, 39]; //Keycodes for W, D, Up Arrow, Right Arrow
+const decrementKeyCodes = [83, 65, 40, 37]; //Keycodes for S, A, Down Arrow, Left Arrow
 
 const getSliderRotation = (number) => {
     if(number < 0) return -1;
@@ -32,6 +34,10 @@ const generateRange = (min, max) => {
     }
     return rangeOfNumbers;
 };
+
+const labelDataIndex = (label, data) => {
+    return data.indexOf(label);
+}
 
 const styles = ({
     circularSlider: {
@@ -75,12 +81,14 @@ const CircularSlider = ({
         progressLineCap = 'round',
         renderLabelValue = null,
         isPeriodic = true,
+        preventDefault = false,
         children,
         onChange = value => {},
     }) => {
     const initialState = {
         mounted: false,
         isDragging: false,
+        keyPressed: false,
         width: width,
         radius: width / 2,
         knobPosition: knobPosition,
@@ -104,6 +112,8 @@ const CircularSlider = ({
         DOWN: touchSupported ? 'touchstart' : 'mousedown',
         UP: touchSupported ? 'touchend' : 'mouseup',
         MOVE: touchSupported ? 'touchmove' : 'mousemove',
+        KEY_DOWN: 'keydown',
+        KEY_UP: 'keyup'
     };
 
     const setKnobPosition = useCallback((radians) => {
@@ -156,7 +166,7 @@ const CircularSlider = ({
 
     const onMouseMove = useCallback((event) => {
         if (!state.isDragging) return;
-
+        
         event.preventDefault();
 
         let touch;
@@ -203,6 +213,45 @@ const CircularSlider = ({
         }
     }, [state.isDragging, state.radius, state.data, state.label, state.knobPosition, state.offset, knobPosition, direction, isPeriodic, isServer, setKnobPosition]);
 
+    const onKeyUp = () => {
+        dispatch({
+            type: 'onKeyUp',
+            payload: {
+                keyPressed: false
+            }
+        });
+    };
+
+    const onKeyDown = useCallback((event) => {
+        if (!(document.activeElement === circularSlider.current)) return;
+        if (preventDefault) {
+            event.preventDefault();
+        }
+        
+        dispatch({
+            type: 'onKeyDown',
+            payload: {
+                keyPressed: true
+            }
+        });
+        const labelIndex = labelDataIndex(state.label, state.data);
+        if (incrementKeyCodes.includes(event.keyCode)){
+            if(labelIndex !== state.data.length - 1){
+                const targetDegrees = (labelIndex + 1) * (360 / state.data.length);
+                const targetRadians = getRadians(targetDegrees) - knobOffset[state.knobPosition] + state.offset;
+                setKnobPosition(targetRadians);
+            } 
+        }
+        
+        if (decrementKeyCodes.includes(event.keyCode)){
+            if(labelIndex !== 0){
+                const targetDegrees = (labelIndex - 1) * (360 / state.data.length);
+                const targetRadians = getRadians(targetDegrees) - knobOffset[state.knobPosition] + state.offset;
+                setKnobPosition(targetRadians);
+            }
+        }
+    }, [preventDefault, setKnobPosition, state.data, state.knobPosition, state.label, state.offset]);
+
     // Get svg path length onmount
     useEffect(() => {
         dispatch({
@@ -247,11 +296,14 @@ const CircularSlider = ({
 
     useEventListener(SLIDER_EVENT.MOVE, onMouseMove);
     useEventListener(SLIDER_EVENT.UP, onMouseUp);
+    useEventListener(SLIDER_EVENT.KEY_DOWN, onKeyDown);
+    useEventListener(SLIDER_EVENT.KEY_UP, onKeyUp);
+    useEventListener('focus', ()        => {console.log(label.toString() + ' is focused')})
 
     const sanitizedLabel = label.replace(/[\W_]/g, "_");
 
     return (
-        <div style={{...styles.circularSlider, ...(state.mounted && styles.mounted)}} ref={circularSlider}>
+        <div style={{...styles.circularSlider, ...(state.mounted && styles.mounted)}} ref={circularSlider} tabIndex={"0"}>
             <Svg
                 width={width}
                 label={sanitizedLabel}
@@ -325,6 +377,7 @@ CircularSlider.propTypes = {
     trackSize: PropTypes.number,
     data: PropTypes.array,
     dataIndex: PropTypes.number,
+    isPeriodic: PropTypes.bool,
     onChange: PropTypes.func
 };
 

@@ -32,17 +32,19 @@ const App = () => {
 			</h3>
 			<div style={styles.slider}>
 				<CircularSlider
-				label="label"
+				label="Experimental"
 				min={0}
     			max={100}
 				appendToValue="%"
-				width={370}
+				// width={370}
 				hideLabelValue={false}
 				progressLineCap={`flat`}
 				trackSize={10}
 				progressSize={10}
 				knobSize={47}
 				isPeriodic={false}
+				dataIndex={25}
+				preventDefault={true}
 				/>
 			</div>
 			<pre className={styles.pre}>
@@ -59,6 +61,8 @@ const App = () => {
 	progressSize={10}
 	knobSize={47}
 	isPeriodic={false}
+	dataIndex={42}
+	preventDefault={true}
 />`}
 			</pre>
 			<h3 style={styles.h3}>
@@ -68,7 +72,7 @@ const App = () => {
 			<div style={styles.slider}>
 				<CircularSlider
 					direction={-1}
-					knobPosition='right'
+					// knobPosition='right'
 					appendToValue='°'
 					valueFontSize='4rem'
 				/>
