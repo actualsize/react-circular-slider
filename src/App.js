@@ -44,6 +44,7 @@ const App = () => {
 				knobSize={47}
 				isPeriodic={false}
 				dataIndex={25}
+				highlightColor='red'
 				/>
 			</div>
 			<pre className={styles.pre}>

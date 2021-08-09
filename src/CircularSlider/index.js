@@ -85,6 +85,7 @@ const CircularSlider = ({
         isPeriodic = true,
         children,
         onChange = value => {},
+        onHandleClick = value => {}
     }) => {
     const initialState = {
         mounted: false,
@@ -151,6 +152,7 @@ const CircularSlider = ({
     }, [state.radius, state.dashFullArray, state.data, state.label, trackSize, knobPosition, direction, onChange]);
 
     const onMouseDown = () => {
+        onHandleClick();
         dispatch({
             type: 'onMouseDown',
             payload: {
