@@ -45,6 +45,12 @@ const App = () => {
 				isPeriodic={false}
 				dataIndex={25}
 				highlightColor='red'
+				onHandleClick={() => {
+					console.log(`new function working`);
+				}}
+				onChange={(value) => {
+					console.log(value);
+				}}
 				/>
 			</div>
 			<pre className={styles.pre}>
